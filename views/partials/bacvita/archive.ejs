@@ -1,0 +1,89 @@
+<%
+  // Panel "Archivo": portafolio de fases anteriores, leído de data/db.json.
+  // No se muestra en la landing; se abre con la pestaña lateral, con "Successo"
+  // en el footer o con la tecla A.
+  var cats = categories || [];
+  var prods = products || [];
+  var byOrder = function (a, b) { return (a.order || 0) - (b.order || 0); };
+  var catName = function (id) { var c = cats.find(function (x) { return x.id === id; }); return c ? c.name : ''; };
+  var catsII = cats.filter(function (c) { return c.fase === 'II'; }).sort(byOrder);
+  var catsI = cats.filter(function (c) { return c.fase !== 'II'; }).sort(byOrder);
+  var prodsII = prods.filter(function (p) { return p.fase === 'II'; }).sort(byOrder);
+  var prodsI = prods.filter(function (p) { return p.fase !== 'II'; }).sort(byOrder);
+  var c = content || {};
+%>
+<button class="bv-archive-tab" type="button" data-bv-archive-open aria-controls="bv-archive" aria-expanded="false" aria-haspopup="dialog" aria-label="Abrir archivo de fases anteriores (tecla A)">Archivo</button>
+
+<div class="bv-archive" id="bv-archive" hidden>
+  <aside class="bv-archive__drawer" id="bv-archive-drawer" role="dialog" aria-modal="true" aria-labelledby="bv-archive-title">
+    <div class="bv-archive__head">
+      <div>
+        <p class="bv-kicker">Archivo Successo</p>
+        <h2 id="bv-archive-title">Portafolio anterior</h2>
+        <p>Las líneas que se mostraban antes en EcoProduct, ordenadas por fase. Cada ficha sigue disponible en el sitio.</p>
+      </div>
+      <button class="bv-archive__close" type="button" id="bv-archive-close" aria-label="Cerrar archivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="bv-archive__tabs" role="tablist" aria-label="Fases">
+      <button role="tab" type="button" id="bv-tab-2" aria-selected="true" aria-controls="bv-panel-2" tabindex="0">Fase II</button>
+      <button role="tab" type="button" id="bv-tab-1" aria-selected="false" aria-controls="bv-panel-1" tabindex="-1">Fase I</button>
+      <button role="tab" type="button" id="bv-tab-0" aria-selected="false" aria-controls="bv-panel-0" tabindex="-1">EcoProduct</button>
+    </div>
+
+    <div class="bv-archive__panel" id="bv-panel-2" role="tabpanel" aria-labelledby="bv-tab-2">
+      <% if (c.faseIITitle) { %><h3><%= c.faseIITitle %></h3><% } %>
+      <% if (c.faseIIIntro) { %><p class="bv-archive__intro"><%= c.faseIIIntro %></p><% } %>
+      <ul class="bv-idx">
+        <% prodsII.forEach(function (p) { %>
+          <li>
+            <a href="/producto/<%= p.id %>">
+              <b><%= p.name %></b>
+              <span><%= p.id === 'bacvita' ? 'Versión de Fase II. La versión actual es esta página.' : p.subtitle %></span>
+              <em><%= catName(p.category) %></em>
+            </a>
+          </li>
+        <% }) %>
+      </ul>
+      <% if (catsII.length) { %>
+        <h4>Líneas</h4>
+        <ul class="bv-idx">
+          <% catsII.forEach(function (cat) { %>
+            <li><a href="/categoria/<%= cat.id %>"><b><%= cat.name %></b><span><%= cat.description %></span><em>Fase II</em></a></li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+
+    <div class="bv-archive__panel" id="bv-panel-1" role="tabpanel" aria-labelledby="bv-tab-1" hidden>
+      <% if (c.faseITitle) { %><h3><%= c.faseITitle %></h3><% } %>
+      <% if (c.faseISubtitle) { %><p class="bv-archive__intro"><%= c.faseISubtitle %></p><% } %>
+      <h4>Líneas</h4>
+      <ul class="bv-idx">
+        <% catsI.forEach(function (cat) { %>
+          <li><a href="/categoria/<%= cat.id %>"><b><%= cat.name %></b><span><%= cat.description %></span><em>Fase I</em></a></li>
+        <% }) %>
+      </ul>
+      <h4>Productos</h4>
+      <ul class="bv-idx">
+        <% prodsI.forEach(function (p) { %>
+          <li><a href="/producto/<%= p.id %>"><b><%= p.name %></b><span><%= p.subtitle %></span><em><%= catName(p.category) %></em></a></li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <div class="bv-archive__panel" id="bv-panel-0" role="tabpanel" aria-labelledby="bv-tab-0" hidden>
+      <% if (c.aboutTitle) { %><h3><%= c.aboutTitle %></h3><% } %>
+      <% if (c.aboutText) { %><p class="bv-archive__intro"><%= c.aboutText %></p><% } %>
+      <% if (c.heroTitle) { %>
+        <blockquote class="bv-archive__quote">
+          <p><%= c.heroTitle %></p>
+          <% if (c.heroTagline) { %><footer><%= c.heroTagline %></footer><% } %>
+        </blockquote>
+      <% } %>
+      <p><a class="bv-archive__link" href="/">Ir al sitio de EcoProduct</a></p>
+    </div>
+  </aside>
+</div>
