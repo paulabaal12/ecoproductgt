@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/bacvita.css?v=2026101401">
+  <link rel="stylesheet" href="/css/bacvita.css?v=2026101402">
 </head>
 <body class="bv-page">
   <a class="bv-skip" href="#main">Saltar al contenido</a>
@@ -71,6 +71,7 @@
     }
     function closeArchive() {
       if (!isOpen()) return;
+      hideDetail(false);
       veil.hidden = true;
       document.documentElement.classList.remove('bv-lock');
       setExpanded(false);
@@ -118,6 +119,33 @@
           var next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
           selectTab(next); next.focus();
         });
+      });
+
+      // Detalle de producto dentro del panel (no sale de la página)
+      var list = document.getElementById('bv-archive-list');
+      var openDetail = null, detailOpener = null;
+      function showDetail(id, opener) {
+        var d = document.getElementById(id);
+        if (!d) return;
+        openDetail = d; detailOpener = opener;
+        list.hidden = true; d.hidden = false;
+        drawer.scrollTop = 0;
+        d.querySelector('[data-bv-detail-back]').focus();
+      }
+      function hideDetail(restoreFocus) {
+        if (!openDetail) return;
+        openDetail.hidden = true; list.hidden = false;
+        openDetail = null;
+        if (restoreFocus && detailOpener) detailOpener.focus();
+      }
+      drawer.querySelectorAll('[data-bv-detail]').forEach(function (b) {
+        b.addEventListener('click', function () { showDetail(b.getAttribute('data-bv-detail'), b); });
+      });
+      drawer.querySelectorAll('[data-bv-detail-back]').forEach(function (b) {
+        b.addEventListener('click', function () { hideDetail(true); });
+      });
+      drawer.querySelectorAll('[data-bv-archive-close]').forEach(function (a) {
+        a.addEventListener('click', function () { lastFocus = null; closeArchive(); });
       });
     }
 
