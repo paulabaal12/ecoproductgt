@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/bacvita.css?v=2026101402">
+  <link rel="stylesheet" href="/css/bacvita.css?v=2026101503">
 </head>
 <body class="bv-page">
   <a class="bv-skip" href="#main">Saltar al contenido</a>
@@ -57,13 +57,25 @@
     var drawer = document.getElementById('bv-archive-drawer');
     var closeBtn = document.getElementById('bv-archive-close');
     var openers = document.querySelectorAll('[data-bv-archive-open]');
+    var tabs = drawer ? Array.prototype.slice.call(drawer.querySelectorAll('[role="tab"]')) : [];
     var lastFocus = null;
+
+    // Pestañas Fase I / Fase II / EcoProduct
+    function selectTab(tab) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+    }
 
     function isOpen() { return veil && !veil.hidden; }
     function setExpanded(v) { openers.forEach(function (b) { b.setAttribute('aria-expanded', String(v)); }); }
     function openArchive() {
       if (!veil || isOpen()) return;
       lastFocus = document.activeElement;
+      if (tabs.length) selectTab(tabs[0]);
       veil.hidden = false;
       document.documentElement.classList.add('bv-lock');
       setExpanded(true);
@@ -101,16 +113,6 @@
         }
       });
 
-      // Pestañas Fase II / Fase I
-      var tabs = Array.prototype.slice.call(drawer.querySelectorAll('[role="tab"]'));
-      function selectTab(tab) {
-        tabs.forEach(function (t) {
-          var on = t === tab;
-          t.setAttribute('aria-selected', String(on));
-          t.tabIndex = on ? 0 : -1;
-          document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-        });
-      }
       tabs.forEach(function (t, i) {
         t.addEventListener('click', function () { selectTab(t); });
         t.addEventListener('keydown', function (e) {
